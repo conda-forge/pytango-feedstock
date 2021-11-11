@@ -30,7 +30,6 @@ requirements:
     - python
     # boost max_pin set in pin_run_as_build in conda-forge-pinning
     - boost
-    - {{ pin_compatible('omniorb', min_pin='x.x', max_pin='x.x') }}
     - {{ pin_compatible('numpy') }}
     - six >=1.10
     - enum34  # [py27]
