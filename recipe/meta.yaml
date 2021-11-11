@@ -32,7 +32,7 @@ requirements:
     - boost
     - {{ pin_compatible('numpy') }}
     - six >=1.10
-    - enum34  # [py27]
+    - enum34  # [py==27]
 
 test:
   requires:
@@ -40,7 +40,7 @@ test:
     - pytest-xdist
     - gevent
     - psutil
-    - trollius  # [py27]
+    - trollius  # [py==27]
     - tango-test=3.2
   source_files:
     - tests/
