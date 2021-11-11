@@ -41,7 +41,7 @@ test:
     - gevent
     - psutil
     - trollius  # [py27]
-    - tango-test
+    - tango-test=3.2
   source_files:
     - tests/
     - setup.cfg
