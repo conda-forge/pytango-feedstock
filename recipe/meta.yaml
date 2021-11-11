@@ -58,7 +58,7 @@ about:
   license_file: LICENSE.txt
   summary: 'Python binding for the TANGO control system'
   doc_url: http://pytango.rtfd.io
-  dev_url: https://github.com/tango-controls/pytango
+  dev_url: https://gitlab.com/tango-controls/pytango
 
 extra:
   recipe-maintainers:
