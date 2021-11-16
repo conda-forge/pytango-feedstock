@@ -9,9 +9,11 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: {{ sha256 }}
+  patches:
+    - remove-loop-in-wait-for.patch
 
 build:
-  number: 1
+  number: 2
   skip: true  # [not linux]
 
 requirements:
@@ -30,10 +32,9 @@ requirements:
     - python
     # boost max_pin set in pin_run_as_build in conda-forge-pinning
     - boost
-    - {{ pin_compatible('omniorb', min_pin='x.x', max_pin='x.x') }}
     - {{ pin_compatible('numpy') }}
     - six >=1.10
-    - enum34  # [py27]
+    - enum34  # [py==27]
 
 test:
   requires:
@@ -41,8 +42,8 @@ test:
     - pytest-xdist
     - gevent
     - psutil
-    - trollius  # [py27]
-    - tango-test
+    - trollius  # [py==27]
+    - tango-test=3.2
   source_files:
     - tests/
     - setup.cfg
@@ -59,7 +60,7 @@ about:
   license_file: LICENSE.txt
   summary: 'Python binding for the TANGO control system'
   doc_url: http://pytango.rtfd.io
-  dev_url: https://github.com/tango-controls/pytango
+  dev_url: https://gitlab.com/tango-controls/pytango
 
 extra:
   recipe-maintainers:
