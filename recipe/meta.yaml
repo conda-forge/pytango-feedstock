@@ -42,7 +42,7 @@ test:
     - pytest-xdist          # [unix]
     - gevent                # [unix]
     - psutil                # [unix]
-    - trollius  # [py==27]  # [unix]
+    - trollius              # [unix and py==27]
     - tango-test=3.2        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
