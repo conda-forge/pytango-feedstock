@@ -1,20 +1,20 @@
 {% set name = "pytango" %}
 {% set version = "9.3.3" %}
-{% set sha256 = "c09fc7a44cac8c2d95d3ad39ba644998e8f468c730dc495443a74de05a07e9f9" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: {{ sha256 }}
+  url: https://gitlab.com/tango-controls/pytango/-/archive/v{{ version }}/pytango-v{{ version }}.tar.gz
+  sha256: 5926e06fba42acd5c2376178fe87756ef42494ab3bc3e96f5289589ef2ff72fe
   patches:
     - remove-loop-in-wait-for.patch
+    - cmake-win.patch  # [win]
 
 build:
-  number: 2
-  skip: true  # [not linux]
+  number: 3
+  skip: true  # [osx]
 
 requirements:
   build:
@@ -37,21 +37,21 @@ requirements:
     - enum34  # [py==27]
 
 test:
-  requires:
-    - pytest
-    - pytest-xdist
-    - gevent
-    - psutil
-    - trollius  # [py==27]
-    - tango-test=3.2
-  source_files:
-    - tests/
-    - setup.cfg
+  requires:                 # [unix]
+    - pytest                # [unix]
+    - pytest-xdist          # [unix]
+    - gevent                # [unix]
+    - psutil                # [unix]
+    - trollius  # [py==27]  # [unix]
+    - tango-test=3.2        # [unix]
+  source_files:             # [unix]
+    - tests/                # [unix]
+    - setup.cfg             # [unix]
   imports:
     - PyTango
     - tango
-  commands:
-    - pytest
+  commands:                 # [unix]
+    - pytest                # [unix]
 
 about:
   home: http://pytango.rtfd.io
