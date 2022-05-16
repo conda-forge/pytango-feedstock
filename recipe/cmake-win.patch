@@ -1,0 +1,175 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2a8c6ba..8324db8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,13 +10,13 @@ if(NOT WIN32)
+   message(FATAL_ERROR "This file is only targeting Windows builds - aborting!")
+ endif(NOT WIN32)
+ 
++find_package(Boost COMPONENTS python REQUIRED)
++
++
+ add_definitions(-DWIN32)
+-add_definitions(-DNDEBUG)
+-add_definitions(-D_WINSTATIC)
+ add_definitions(-DNPY_NO_DEPRECATED_API)
+-add_definitions(-DBOOST_PYTHON_STATIC_LIB)
+-add_definitions(-DBOOST_ALL_NO_LIB)
+-add_definitions(-DZMQ_STATIC)
++add_definitions(-DBOOST_ALL_DYN_LINK)
++add_definitions("/EHsc")
+ 
+ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+   set(PY_TARGET "64")
+@@ -126,42 +126,30 @@ set(HEADERS
+         ext/tgutils.h
+         ext/to_py.h)
+ 
+-set(${PROJECT_NAME} INCLUDE_DIRS "$ENV{TANGO_ROOT}/include")
++set(${PROJECT_NAME} INCLUDE_DIRS "${TANGO_ROOT}/include")
+ 
+-if(MSVC90)
+-  # v9 used for Python 2
+-  set(VCSTR "90")
+-  set(BOOST_VERSION_ "1_70")
+-elseif(MSVC14)
+-  # v14 used for Python 3
+-  set(VCSTR "140")
+-  set(BOOST_VERSION_ "1_73")
+-endif()
+-set(ZMQ_VERSION_ "4_0_5")
+ 
+-set(RELEASE "Release_$ENV{PYTHON_VER}_${PY_TARGET}")
++set(RELEASE "Release_${PYTHON_VER}_${PY_TARGET}")
+ include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ext")
+-include_directories(${PROJECT_NAME} PUBLIC "$ENV{BOOST_ROOT}/include/boost-${BOOST_VERSION_}")
+-include_directories(${PROJECT_NAME} PUBLIC "$ENV{PYTHON_ROOT}/include")
+-include_directories(${PROJECT_NAME} PUBLIC "$ENV{TANGO_ROOT}/include")
+-include_directories(${PROJECT_NAME} PUBLIC "$ENV{PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
+-link_directories("$ENV{TANGO_ROOT}/bin")
+-link_directories("$ENV{TANGO_ROOT}/lib")
+-link_directories("$ENV{PYTHON_ROOT}/libs")
+-link_directories("$ENV{BOOST_ROOT}/lib")
+-message("TANGO at: $ENV{TANGO_ROOT}")
+-message("BOOST at: $ENV{BOOST_ROOT}")
+-message("PYTHON at: $ENV{PYTHON_ROOT}")
++include_directories(${PROJECT_NAME} PUBLIC "${PYTHON_ROOT}/include")
++include_directories(${PROJECT_NAME} PUBLIC "${TANGO_PKG_INCLUDE_DIRS}")
++include_directories(${PROJECT_NAME} PUBLIC "${Boost_INCLUDE_DIRS}")
++include_directories(${PROJECT_NAME} PUBLIC "${PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
++link_directories("${TANGO_ROOT}/bin")
++link_directories("${TANGO_ROOT}/lib")
++link_directories("${PYTHON_ROOT}/libs")
++message("TANGO at: ${TANGO_ROOT}")
++message("PYTHON at: ${PYTHON_ROOT}")
+ message("Release at: ${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}")
+-add_compile_options(/MT)
++add_compile_options(/MD)
+ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+-target_compile_options(${PROJECT_NAME} PUBLIC "/MT")
++target_compile_options(${PROJECT_NAME} PUBLIC "/MD")
+ set_target_properties( ${PROJECT_NAME}
+   PROPERTIES
+   SUFFIX ".pyd" )
+ set_target_properties(${PROJECT_NAME}
+   PROPERTIES
+-  COMPILE_OPTIONS "MT" )
++  COMPILE_OPTIONS "MD" )
+ set_target_properties(${PROJECT_NAME}
+   PROPERTIES
+   ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
+@@ -175,8 +163,8 @@ endif()
+ 
+ add_custom_command(TARGET ${PROJECT_NAME}
+   POST_BUILD
+-  COMMAND "$ENV{PYTHON_ROOT}/python.exe"  ARGS "${CMAKE_CURRENT_SOURCE_DIR}/winsetup.py" ${RELEASE} dist temp_dist $(ConfigurationName) $(PlatformName)
+-  COMMENT "Building installer")
++  COMMAND "${PYTHON_ROOT}/python.exe" ARGS "${CMAKE_CURRENT_SOURCE_DIR}/winsetup.py" ${RELEASE}
++  COMMENT "Installing pytango")
+ 
+ 
+ install(TARGETS ${PROJECT_NAME}
+@@ -184,17 +172,11 @@ install(TARGETS ${PROJECT_NAME}
+   RUNTIME DESTINATION bin)
+ 
+ set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/bigobj")
+-set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/MT")
+-set_property(TARGET ${PROJECT_NAME} PROPERTY LINK_FLAGS "/LTCG /force:multiple /DYNAMICBASE:NO /OPT:REF /OPT:ICF /SUBSYSTEM:WINDOWS")
++set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/MD")
+ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/libtango.lib
+-                                             $ENV{TANGO_ROOT}/lib/omniORB4.lib
+-                                             $ENV{TANGO_ROOT}/lib/omniDynamic4.lib
+-                                             $ENV{TANGO_ROOT}/lib/COS4.lib
+-                                             $ENV{TANGO_ROOT}/lib/omnithread.lib
+-                                             $ENV{TANGO_ROOT}/lib/msvcstub.lib)
++target_link_libraries(${PROJECT_NAME} PUBLIC tango omniORB4_rt omniDynamic4_rt COS4_rt omnithread_rt)
++target_link_libraries(${PROJECT_NAME} PUBLIC libzmq-mt-4_3_4)
+ target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32 mswsock advapi32 comctl32 odbc32)
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/pthreadVC2.lib)
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/libzmq-v${VCSTR}-mt-s-${ZMQ_VERSION_}.lib)
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{BOOST_ROOT}/lib/libboost_python$ENV{PYTHON_VER}-vc${VCSTR}-mt-s-x${PY_TARGET}-${BOOST_VERSION_}.lib)
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{PYTHON_ROOT}/libs/python$ENV{PYTHON_VER}.lib)
++target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
++target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
++target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
+diff --git a/winsetup.py b/winsetup.py
+index a4f9a2f..c6ec475 100644
+--- a/winsetup.py
++++ b/winsetup.py
+@@ -15,8 +15,6 @@
+ #          Microsoft Visual Studio and not from the command line
+ # ------------------------------------------------------------------------------
+ 
+-from __future__ import print_function
+-
+ import sys
+ import os
+ import os.path as osp
+@@ -30,22 +28,13 @@ def main():
+     winsetup_dir = osp.dirname(osp.abspath(__file__))
+     os.chdir(winsetup_dir)
+     setup_name = "setup.py"
+-    bitmap = osp.join(winsetup_dir, 'doc', 'logo-medium.bmp')
+-    ver = ".".join(map(str, sys.version_info[:2]))
+ 
+     print("winsetup: invoked with: " + ' '.join(sys.argv))
+-    if len(sys.argv) < 6:
+-        print("winsetup: need to supply build directory, distribution directory, temporary binary install directory, configuration name and platform name")
++    if len(sys.argv) < 1:
++        print("winsetup: need to supply build directory")
+         return 1
+ 
+-    build_dir, dist_dir, bdist_dir = map(osp.abspath, sys.argv[1:4])
+-    config_name, plat_name = sys.argv[4:6]
+-    # Pypi is picky about platform name. Make sure we obey his/her majesty
+-    plat_name = plat_name.lower()
+-#    temp_base_dir = osp.abspath(os.environ["TEMP"])
+-#    temp_dir = osp.join(temp_base_dir, "PyTango", config_name)
+-    if plat_name == 'x64':
+-        plat_name = 'win-amd64'
++    build_dir = osp.abspath(sys.argv[1])
+ 
+     try:
+         cmd_line = '%s %s ' % (executable, setup_name)
+@@ -56,20 +45,6 @@ def main():
+         cmd_line += 'install_lib --skip-build --no-compile ' \
+                     '--build-dir=%s ' \
+                     % (build_dir, )
+-#        cmd_line += 'bdist_msi --skip-build --target-version=%s ' \
+-#                    '--bdist-dir=%s ' \
+-#                    '--dist-dir=%s ' \
+-#                    '--plat-name=%s ' % (ver, bdist_dir, dist_dir, plat_name)
+-        cmd_line += 'bdist_wininst --skip-build --target-version=%s ' \
+-                    '--bdist-dir=%s ' \
+-                    '--dist-dir=%s ' \
+-                    '--title="PyTango 9" ' \
+-                    '--bitmap="%s" ' \
+-                    '--plat-name=%s ' % (ver, bdist_dir, dist_dir, bitmap, plat_name)
+-        cmd_line += 'bdist_wheel --skip-build ' \
+-                    '--bdist-dir=%s ' \
+-                    '--dist-dir=%s ' \
+-                    '--plat-name=%s ' % (bdist_dir, dist_dir, plat_name)
+         os.system(cmd_line)
+     except:
+         print("Failed:")
