@@ -9,8 +9,6 @@ source:
   url: https://gitlab.com/tango-controls/pytango/-/archive/v{{ version }}/pytango-v{{ version }}.tar.gz
   sha256: f1cf08b2ca6a62c7f6e77920b5d0ece98f90a5fd0d291ff6e35c6134c66e887e
   patches:
-    - remove-loop-in-wait-for.patch
-    - ssize_t.patch
     - cmake-win.patch  # [win]
 
 build:
