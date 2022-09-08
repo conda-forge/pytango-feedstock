@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2a8c6ba..8324db8 100644
+index 2a8c6ba..feaba2c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,13 +10,13 @@ if(NOT WIN32)
@@ -21,7 +21,7 @@ index 2a8c6ba..8324db8 100644
  
  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
    set(PY_TARGET "64")
-@@ -126,42 +126,30 @@ set(HEADERS
+@@ -126,75 +126,45 @@ set(HEADERS
          ext/tgutils.h
          ext/to_py.h)
  
@@ -40,7 +40,6 @@ index 2a8c6ba..8324db8 100644
 -set(ZMQ_VERSION_ "4_0_5")
  
 -set(RELEASE "Release_$ENV{PYTHON_VER}_${PY_TARGET}")
-+set(RELEASE "Release_${PYTHON_VER}_${PY_TARGET}")
  include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ext")
 -include_directories(${PROJECT_NAME} PUBLIC "$ENV{BOOST_ROOT}/include/boost-${BOOST_VERSION_}")
 -include_directories(${PROJECT_NAME} PUBLIC "$ENV{PYTHON_ROOT}/include")
@@ -53,6 +52,8 @@ index 2a8c6ba..8324db8 100644
 -message("TANGO at: $ENV{TANGO_ROOT}")
 -message("BOOST at: $ENV{BOOST_ROOT}")
 -message("PYTHON at: $ENV{PYTHON_ROOT}")
+-message("Release at: ${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}")
+-add_compile_options(/MT)
 +include_directories(${PROJECT_NAME} PUBLIC "${PYTHON_ROOT}/include")
 +include_directories(${PROJECT_NAME} PUBLIC "${TANGO_PKG_INCLUDE_DIRS}")
 +include_directories(${PROJECT_NAME} PUBLIC "${Boost_INCLUDE_DIRS}")
@@ -62,8 +63,6 @@ index 2a8c6ba..8324db8 100644
 +link_directories("${PYTHON_ROOT}/libs")
 +message("TANGO at: ${TANGO_ROOT}")
 +message("PYTHON at: ${PYTHON_ROOT}")
- message("Release at: ${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}")
--add_compile_options(/MT)
 +add_compile_options(/MD)
  add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
 -target_compile_options(${PROJECT_NAME} PUBLIC "/MT")
@@ -74,22 +73,26 @@ index 2a8c6ba..8324db8 100644
  set_target_properties(${PROJECT_NAME}
    PROPERTIES
 -  COMPILE_OPTIONS "MT" )
+-set_target_properties(${PROJECT_NAME}
+-  PROPERTIES
+-  ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
+-  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
+-  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango")
 +  COMPILE_OPTIONS "MD" )
- set_target_properties(${PROJECT_NAME}
-   PROPERTIES
-   ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
-@@ -175,8 +163,8 @@ endif()
  
- add_custom_command(TARGET ${PROJECT_NAME}
-   POST_BUILD
+ if(MSVC90 AND (CMAKE_SIZEOF_VOID_P EQUAL 8))
+   # resolve VC 9 64bits complains
+   set_source_files_properties(ext/base_types.cpp PROPERTIES COMPILE_FLAGS /bigobj)
+ endif()
+ 
+-add_custom_command(TARGET ${PROJECT_NAME}
+-  POST_BUILD
 -  COMMAND "$ENV{PYTHON_ROOT}/python.exe"  ARGS "${CMAKE_CURRENT_SOURCE_DIR}/winsetup.py" ${RELEASE} dist temp_dist $(ConfigurationName) $(PlatformName)
 -  COMMENT "Building installer")
-+  COMMAND "${PYTHON_ROOT}/python.exe" ARGS "${CMAKE_CURRENT_SOURCE_DIR}/winsetup.py" ${RELEASE}
-+  COMMENT "Installing pytango")
- 
+-
  
  install(TARGETS ${PROJECT_NAME}
-@@ -184,17 +172,11 @@ install(TARGETS ${PROJECT_NAME}
+   ARCHIVE DESTINATION lib
    RUNTIME DESTINATION bin)
  
  set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/bigobj")
@@ -113,63 +116,230 @@ index 2a8c6ba..8324db8 100644
 +target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
-diff --git a/winsetup.py b/winsetup.py
-index a4f9a2f..c6ec475 100644
---- a/winsetup.py
-+++ b/winsetup.py
-@@ -15,8 +15,6 @@
- #          Microsoft Visual Studio and not from the command line
- # ------------------------------------------------------------------------------
+diff --git a/setup.py b/setup.py
+index 0e44a86..54bb034 100644
+--- a/setup.py
++++ b/setup.py
+@@ -13,6 +13,7 @@
  
--from __future__ import print_function
--
- import sys
  import os
- import os.path as osp
-@@ -30,22 +28,13 @@ def main():
-     winsetup_dir = osp.dirname(osp.abspath(__file__))
-     os.chdir(winsetup_dir)
-     setup_name = "setup.py"
--    bitmap = osp.join(winsetup_dir, 'doc', 'logo-medium.bmp')
--    ver = ".".join(map(str, sys.version_info[:2]))
+ import sys
++import pathlib
+ import runpy
+ import struct
+ import subprocess
+@@ -20,14 +21,11 @@ import json
  
-     print("winsetup: invoked with: " + ' '.join(sys.argv))
--    if len(sys.argv) < 6:
--        print("winsetup: need to supply build directory, distribution directory, temporary binary install directory, configuration name and platform name")
-+    if len(sys.argv) < 1:
-+        print("winsetup: need to supply build directory")
-         return 1
+ from ctypes.util import find_library
  
--    build_dir, dist_dir, bdist_dir = map(osp.abspath, sys.argv[1:4])
--    config_name, plat_name = sys.argv[4:6]
--    # Pypi is picky about platform name. Make sure we obey his/her majesty
--    plat_name = plat_name.lower()
--#    temp_base_dir = osp.abspath(os.environ["TEMP"])
--#    temp_dir = osp.join(temp_base_dir, "PyTango", config_name)
--    if plat_name == 'x64':
--        plat_name = 'win-amd64'
-+    build_dir = osp.abspath(sys.argv[1])
++from distutils.file_util import copy_file
+ from setuptools import setup, Extension
+ from setuptools import Command
+ from setuptools.command.build_ext import build_ext as dftbuild_ext
+-from setuptools.command.install import install
  
-     try:
-         cmd_line = '%s %s ' % (executable, setup_name)
-@@ -56,20 +45,6 @@ def main():
-         cmd_line += 'install_lib --skip-build --no-compile ' \
-                     '--build-dir=%s ' \
-                     % (build_dir, )
--#        cmd_line += 'bdist_msi --skip-build --target-version=%s ' \
--#                    '--bdist-dir=%s ' \
--#                    '--dist-dir=%s ' \
--#                    '--plat-name=%s ' % (ver, bdist_dir, dist_dir, plat_name)
--        cmd_line += 'bdist_wininst --skip-build --target-version=%s ' \
--                    '--bdist-dir=%s ' \
--                    '--dist-dir=%s ' \
--                    '--title="PyTango 9" ' \
--                    '--bitmap="%s" ' \
--                    '--plat-name=%s ' % (ver, bdist_dir, dist_dir, bitmap, plat_name)
--        cmd_line += 'bdist_wheel --skip-build ' \
--                    '--bdist-dir=%s ' \
--                    '--dist-dir=%s ' \
--                    '--plat-name=%s ' % (bdist_dir, dist_dir, plat_name)
-         os.system(cmd_line)
-     except:
-         print("Failed:")
+-from distutils.command.build import build as dftbuild
+-from distutils.unixccompiler import UnixCCompiler
+-from distutils.version import LooseVersion as V
+ 
+ # Detect numpy
+ try:
+@@ -241,88 +239,32 @@ def add_lib_boost(dirs):
+     dirs["libraries"].append(boost_library_name)
+ 
+ 
+-class build(dftbuild):
++class PrebuiltExtension(Extension):
++    def __init__(self, input_file, *args, **kw):
++        name = pathlib.Path(input_file).stem
++        if not os.path.exists(input_file):
++            raise ValueError(f'Prebuilt extension file not found\n{input_file}')
++        self.input_file = input_file
++        super().__init__(name, sources=[], *args, **kw)
+ 
+-    user_options = list(dftbuild.user_options)
+ 
+-    # Strip library option
+-    user_options.append(
+-        (
+-            "strip-lib",
+-            None,
+-            "strips the shared library of debugging symbols"
+-            " (Unix like systems only)",
+-        )
+-    )
+-
+-    boolean_options = dftbuild.boolean_options + ["strip-lib"]
+-
+-    def initialize_options(self):
+-        dftbuild.initialize_options(self)
+-        self.strip_lib = None
+-        self.no_doc = None
+-
+-    def finalize_options(self):
+-        dftbuild.finalize_options(self)
++class prebuilt_binary(dftbuild_ext):
+ 
+     def run(self):
+-        if numpy is None:
+-            self.warn("NOT using numpy: it is not available")
+-        elif get_c_numpy() is None:
+-            self.warn("NOT using numpy: numpy available but C source is not")
+-        dftbuild.run(self)
+-        if self.strip_lib:
+-            self.strip_debug_symbols()
+-
+-    def strip_debug_symbols(self):
+-        if not POSIX:
+-            return
+-        if os.system("type objcopy") != 0:
+-            return
+-        d = abspath(self.build_lib, "tango")
+-        orig_dir = os.path.abspath(os.curdir)
+-        so = "_tango.so"
+-        dbg = so + ".dbg"
+-        try:
+-            os.chdir(d)
+-            stripped_cmd = 'file %s | grep -q "not stripped" || exit 1' % so
+-            not_stripped = os.system(stripped_cmd) == 0
+-            if not_stripped:
+-                os.system("objcopy --only-keep-debug %s %s" % (so, dbg))
+-                os.system("objcopy --strip-debug --strip-unneeded %s" % (so,))
+-                os.system("objcopy --add-gnu-debuglink=%s %s" % (dbg, so))
+-                os.system("chmod -x %s" % (dbg,))
+-        finally:
+-            os.chdir(orig_dir)
+-
+-
+-class build_ext(dftbuild_ext):
+-    def build_extensions(self):
+-        self.use_cpp_0x = False
+-        if isinstance(self.compiler, UnixCCompiler):
+-            compiler_pars = self.compiler.compiler_so
+-            while "-Wstrict-prototypes" in compiler_pars:
+-                del compiler_pars[compiler_pars.index("-Wstrict-prototypes")]
+-            # self.compiler.compiler_so = " ".join(compiler_pars)
+-
+-            # mimic tango check to activate C++0x extension
+-            compiler = self.compiler.compiler
+-            proc = subprocess.Popen(compiler + ["-dumpversion"], stdout=subprocess.PIPE)
+-            pipe = proc.stdout
+-            proc.wait()
+-            gcc_ver = pipe.readlines()[0].decode().strip()
+-            if V(gcc_ver) >= V("4.3.3"):
+-                self.use_cpp_0x = True
+-        dftbuild_ext.build_extensions(self)
+-
+-    def build_extension(self, ext):
+-        if self.use_cpp_0x:
+-            ext.extra_compile_args += ["-std=c++0x"]
+-            ext.define_macros += [("PYTANGO_HAS_UNIQUE_PTR", "1")]
+-        ext.extra_compile_args += [
+-            "-Wno-deprecated-declarations",
+-        ]
+-        dftbuild_ext.build_extension(self, ext)
++        for ext in self.extensions:
++            fullname = self.get_ext_fullname(ext.name)
++            filename = self.get_ext_filename(fullname)
++            dest_path = pathlib.Path(self.build_lib) / "tango"
++            if not dest_path.exists():
++                dest_path.mkdir(parents=True)
++            dest_filename = dest_path / os.path.basename(filename)
++
++            copy_file(
++                ext.input_file, dest_filename, verbose=self.verbose,
++                dry_run=self.dry_run
++            )
++        if self.inplace:
++            self.copy_extensions_to_source()
+ 
+ 
+ class check_tests_errors(Command):
+@@ -365,38 +307,6 @@ class check_tests_errors(Command):
+ 
+ def setup_args():
+ 
+-    directories = {
+-        "include_dirs": [],
+-        "library_dirs": [],
+-        "libraries": [],
+-    }
+-    sys_libs = []
+-
+-    # Link specifically to libtango version 9
+-    tangolib = ":libtango.so.9" if POSIX else "tango"
+-    directories["libraries"].append(tangolib)
+-
+-    add_lib("omni", directories, sys_libs, lib_name="omniORB4")
+-    add_lib("zmq", directories, sys_libs, lib_name="libzmq")
+-    add_lib("tango", directories, sys_libs, inc_suffix="tango")
+-    add_lib_boost(directories)
+-
+-    # special numpy configuration
+-
+-    numpy_c_include = get_c_numpy()
+-    if numpy_c_include is not None:
+-        directories["include_dirs"].append(numpy_c_include)
+-
+-    macros = []
+-    if not has_numpy():
+-        macros.append(("DISABLE_PYTANGO_NUMPY", None))
+-    else:
+-        macros.append(("PYTANGO_NUMPY_VERSION", numpy.__version__))
+-        macros.append(("NPY_NO_DEPRECATED_API", "0"))
+-
+-    if POSIX:
+-        directories = pkg_config(*sys_libs, **directories)
+-
+     Release = get_release_info()
+ 
+     author = Release.authors["Coutinho"]
+@@ -512,46 +422,10 @@ def setup_args():
+         extra_compile_args += ["-g", "-O0"]
+         extra_link_args += ["-g", "-O0"]
+ 
+-    src_dir = abspath("ext")
+-    client_dir = src_dir
+-    server_dir = os.path.join(src_dir, "server")
+-
+-    clientfiles = sorted(
+-        os.path.join(client_dir, fname)
+-        for fname in os.listdir(client_dir)
+-        if fname.endswith(".cpp")
+-    )
+-
+-    serverfiles = sorted(
+-        os.path.join(server_dir, fname)
+-        for fname in os.listdir(server_dir)
+-        if fname.endswith(".cpp")
+-    )
+-
+-    cppfiles = clientfiles + serverfiles
+-    directories["include_dirs"].extend([client_dir, server_dir])
+-
+-    include_dirs = uniquify(directories["include_dirs"])
+-    library_dirs = uniquify(directories["library_dirs"])
+-    libraries = uniquify(directories["libraries"])
+-
+-    pytango_ext = Extension(
+-        name="_tango",
+-        sources=cppfiles,
+-        include_dirs=include_dirs,
+-        library_dirs=library_dirs,
+-        libraries=libraries,
+-        define_macros=macros,
+-        extra_compile_args=extra_compile_args,
+-        extra_link_args=extra_link_args,
+-        language="c++",
+-        depends=[],
+-    )
++    pytango_ext = PrebuiltExtension(abspath("build/_tango.pyd"))
+ 
+     cmdclass = {
+-        "build": build,
+-        "build_ext": build_ext,
+-        "install": install,
++        "build_ext": prebuilt_binary,
+         "check_tests_errors": check_tests_errors,
+     }
+ 

@@ -17,3 +17,7 @@ if errorlevel 1 exit 1
 
 nmake
 if errorlevel 1 exit
+
+cd ..
+python -m pip install --no-binary=:all: --ignore-installed --no-deps .
+if errorlevel 1 exit
