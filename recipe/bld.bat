@@ -19,5 +19,7 @@ nmake
 if errorlevel 1 exit
 
 cd ..
-python -m pip install --no-binary=:all: --ignore-installed --no-deps .
+
+rmdir /s /q pytango.egg-info
+python -m pip install --no-binary=:all: -vv .
 if errorlevel 1 exit
