@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.3.4" %}
+{% set version = "9.3.5" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://gitlab.com/tango-controls/pytango/-/archive/v{{ version }}/pytango-v{{ version }}.tar.gz
-  sha256: f1cf08b2ca6a62c7f6e77920b5d0ece98f90a5fd0d291ff6e35c6134c66e887e
+  sha256: 41a6f355aa205600b2e4faf49684220e935e6b33e6a9784fed7153743997d101
   patches:
     - cmake-win.patch  # [win]
 
