@@ -17,3 +17,9 @@ if errorlevel 1 exit 1
 
 nmake
 if errorlevel 1 exit
+
+cd ..
+
+rmdir /s /q pytango.egg-info
+python -m pip install --no-binary=:all: -vv .
+if errorlevel 1 exit
