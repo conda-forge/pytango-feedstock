@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.3.5" %}
+{% set version = "9.3.6" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 41a6f355aa205600b2e4faf49684220e935e6b33e6a9784fed7153743997d101
+  sha256: 6af91181cdbe5f729580a8e5cd487fcb47193147b8ef470ced9ecfd2f49257f5
   patches:
     - cmake-win.patch  # [win]
 
 build:
-  number: 1
+  number: 0
   skip: true  # [osx]
 
 requirements:
