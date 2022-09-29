@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2a8c6ba..feaba2c 100644
+index 2c78b9e..feaba2c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,13 +10,13 @@ if(NOT WIN32)
@@ -21,7 +21,7 @@ index 2a8c6ba..feaba2c 100644
  
  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
    set(PY_TARGET "64")
-@@ -126,75 +126,45 @@ set(HEADERS
+@@ -126,74 +126,45 @@ set(HEADERS
          ext/tgutils.h
          ext/to_py.h)
  
@@ -104,8 +104,7 @@ index 2a8c6ba..feaba2c 100644
 -                                             $ENV{TANGO_ROOT}/lib/omniORB4.lib
 -                                             $ENV{TANGO_ROOT}/lib/omniDynamic4.lib
 -                                             $ENV{TANGO_ROOT}/lib/COS4.lib
--                                             $ENV{TANGO_ROOT}/lib/omnithread.lib
--                                             $ENV{TANGO_ROOT}/lib/msvcstub.lib)
+-                                             $ENV{TANGO_ROOT}/lib/omnithread.lib)
 +target_link_libraries(${PROJECT_NAME} PUBLIC tango omniORB4_rt omniDynamic4_rt COS4_rt omnithread_rt)
 +target_link_libraries(${PROJECT_NAME} PUBLIC libzmq-mt-4_3_4)
  target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32 mswsock advapi32 comctl32 odbc32)
