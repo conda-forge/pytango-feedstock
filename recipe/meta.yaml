@@ -38,7 +38,7 @@ requirements:
 test:
   requires:   # [unix]
     - pytest                # [unix]
-    - pytest-xdist          # [unix]
+    - pytest-xdist <3       # [unix]
     - gevent                # [unix]
     - psutil                # [unix]
     - trollius              # [unix and py==27]
