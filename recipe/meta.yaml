@@ -9,7 +9,8 @@ source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 6af91181cdbe5f729580a8e5cd487fcb47193147b8ef470ced9ecfd2f49257f5
   patches:
-    - cmake-win.patch  # [win]
+    - cmake-win.patch             # [win]
+    - coroutine-python3.11.patch  # [py==311]
 
 build:
   number: 1
