@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.3.6" %}
+{% set version = "9.4.0rc1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,14 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 6af91181cdbe5f729580a8e5cd487fcb47193147b8ef470ced9ecfd2f49257f5
+  sha256: 942906fcf8dbed807139a97c0e21177339383693277e34f92bc8623ad3d16103
   patches:
     - cmake-win.patch             # [win]
-    - coroutine-python3.11.patch  # [py==311]
 
 build:
-  number: 1
-  skip: true  # [osx]
+  number: 0
 
 requirements:
   build:
@@ -23,10 +21,10 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=9.3,<9.4.0a0
+    - cpptango >=9.4,<9.5.0a0
     - boost
-    - numpy >=1.1
-    - omniorb
+    - numpy >=1.13.3
+    - omniorb-libs
   run:
     # cpptango set in run_exports
     - python
@@ -34,23 +32,21 @@ requirements:
     - boost
     - {{ pin_compatible('numpy') }}
     - six >=1.10
-    - enum34  # [py==27]
 
 test:
-  requires:   # [unix]
+  requires:                 # [unix]
     - pytest                # [unix]
-    - pytest-xdist <3       # [unix]
+    - pytest-forked         # [unix]
     - gevent                # [unix]
     - psutil                # [unix]
-    - trollius              # [unix and py==27]
-    - tango-test=3.2        # [unix]
-  source_files:   # [unix]
+    - tango-test=3.6        # [unix]
+  source_files:             # [unix]
     - tests/                # [unix]
     - setup.cfg             # [unix]
   imports:
     - PyTango
     - tango
-  commands:   # [unix]
+  commands:                 # [unix]
     - pytest                # [unix]
 
 about:
