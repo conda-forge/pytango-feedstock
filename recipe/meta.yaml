@@ -23,7 +23,7 @@ requirements:
     - cppzmq
     - cpptango >=9.4,<9.5.0a0
     - boost
-    - numpy >=1.13.3
+    - numpy
     - omniorb-libs
   run:
     # cpptango set in run_exports
