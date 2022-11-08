@@ -1,2 +1,2 @@
-channels_target:
+channel_targets:
   - conda-forge pytango_rc
