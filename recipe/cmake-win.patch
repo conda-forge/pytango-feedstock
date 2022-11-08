@@ -116,7 +116,7 @@ index 2c78b9e..feaba2c 100644
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
 diff --git a/setup.py b/setup.py
-index 0e44a86..54bb034 100644
+index e582210..b991322 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -13,6 +13,7 @@
@@ -141,9 +141,9 @@ index 0e44a86..54bb034 100644
 -from distutils.unixccompiler import UnixCCompiler
 -from distutils.version import LooseVersion as V
  
- # Detect numpy
+ # numpy is only required when compiling, not when building the sdist for example
  try:
-@@ -241,88 +239,32 @@ def add_lib_boost(dirs):
+@@ -213,84 +211,32 @@ def add_lib_boost(dirs):
      dirs["libraries"].append(boost_library_name)
  
  
@@ -180,10 +180,6 @@ index 0e44a86..54bb034 100644
 +class prebuilt_binary(dftbuild_ext):
  
      def run(self):
--        if numpy is None:
--            self.warn("NOT using numpy: it is not available")
--        elif get_c_numpy() is None:
--            self.warn("NOT using numpy: numpy available but C source is not")
 -        dftbuild.run(self)
 -        if self.strip_lib:
 -            self.strip_debug_symbols()
@@ -231,7 +227,7 @@ index 0e44a86..54bb034 100644
 -
 -    def build_extension(self, ext):
 -        if self.use_cpp_0x:
--            ext.extra_compile_args += ["-std=c++0x"]
+-            ext.extra_compile_args += ["-std=c++14"]
 -            ext.define_macros += [("PYTANGO_HAS_UNIQUE_PTR", "1")]
 -        ext.extra_compile_args += [
 -            "-Wno-deprecated-declarations",
@@ -254,7 +250,7 @@ index 0e44a86..54bb034 100644
  
  
  class check_tests_errors(Command):
-@@ -365,38 +307,6 @@ class check_tests_errors(Command):
+@@ -333,28 +279,6 @@ class check_tests_errors(Command):
  
  def setup_args():
  
@@ -264,36 +260,26 @@ index 0e44a86..54bb034 100644
 -        "libraries": [],
 -    }
 -    sys_libs = []
--
--    # Link specifically to libtango version 9
--    tangolib = ":libtango.so.9" if POSIX else "tango"
--    directories["libraries"].append(tangolib)
--
+-    add_lib("tango", directories, sys_libs, lib_name="tango")
 -    add_lib("omni", directories, sys_libs, lib_name="omniORB4")
 -    add_lib("zmq", directories, sys_libs, lib_name="libzmq")
--    add_lib("tango", directories, sys_libs, inc_suffix="tango")
 -    add_lib_boost(directories)
 -
--    # special numpy configuration
--
--    numpy_c_include = get_c_numpy()
--    if numpy_c_include is not None:
--        directories["include_dirs"].append(numpy_c_include)
--
 -    macros = []
--    if not has_numpy():
--        macros.append(("DISABLE_PYTANGO_NUMPY", None))
--    else:
+-    # special numpy configuration (only needed at build time)
+-    if numpy is not None:
+-        directories["include_dirs"].append(numpy.get_include())
+-
 -        macros.append(("PYTANGO_NUMPY_VERSION", numpy.__version__))
 -        macros.append(("NPY_NO_DEPRECATED_API", "0"))
 -
--    if POSIX:
+-    if POSIX or MACOS:
 -        directories = pkg_config(*sys_libs, **directories)
 -
      Release = get_release_info()
  
      author = Release.authors["Coutinho"]
-@@ -512,46 +422,10 @@ def setup_args():
+@@ -453,46 +377,10 @@ def setup_args():
          extra_compile_args += ["-g", "-O0"]
          extra_link_args += ["-g", "-O0"]
  
