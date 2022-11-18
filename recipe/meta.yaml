@@ -13,7 +13,7 @@ source:
     - coroutine-python3.11.patch  # [py==311]
 
 build:
-  number: 1
+  number: 2
   skip: true  # [osx]
 
 requirements:
@@ -25,7 +25,7 @@ requirements:
     - cppzmq
     - cpptango >=9.3,<9.4.0a0
     - boost
-    - numpy >=1.1
+    - numpy
     - omniorb
   run:
     # cpptango set in run_exports
