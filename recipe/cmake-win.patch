@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2c78b9e..feaba2c 100644
+index 9875cc9..a890d23 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,13 +10,13 @@ if(NOT WIN32)
+@@ -16,13 +16,13 @@ if(NOT WIN32)
    message(FATAL_ERROR "This file is only targeting Windows builds - aborting!")
  endif(NOT WIN32)
  
@@ -21,30 +21,21 @@ index 2c78b9e..feaba2c 100644
  
  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
    set(PY_TARGET "64")
-@@ -126,74 +126,45 @@ set(HEADERS
+@@ -129,44 +129,26 @@ set(HEADERS
          ext/tgutils.h
          ext/to_py.h)
  
--set(${PROJECT_NAME} INCLUDE_DIRS "$ENV{TANGO_ROOT}/include")
-+set(${PROJECT_NAME} INCLUDE_DIRS "${TANGO_ROOT}/include")
- 
--if(MSVC90)
--  # v9 used for Python 2
--  set(VCSTR "90")
--  set(BOOST_VERSION_ "1_70")
--elseif(MSVC14)
--  # v14 used for Python 3
--  set(VCSTR "140")
--  set(BOOST_VERSION_ "1_73")
--endif()
+-set(BOOST_VCSTR "140")
+-set(BOOST_VERSION_ "1_73")
+-set(ZMQ_VCSTR "141")
 -set(ZMQ_VERSION_ "4_0_5")
  
 -set(RELEASE "Release_$ENV{PYTHON_VER}_${PY_TARGET}")
- include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ext")
--include_directories(${PROJECT_NAME} PUBLIC "$ENV{BOOST_ROOT}/include/boost-${BOOST_VERSION_}")
--include_directories(${PROJECT_NAME} PUBLIC "$ENV{PYTHON_ROOT}/include")
--include_directories(${PROJECT_NAME} PUBLIC "$ENV{TANGO_ROOT}/include")
--include_directories(${PROJECT_NAME} PUBLIC "$ENV{PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
+ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/ext")
+-include_directories("$ENV{TANGO_ROOT}/include")
+-include_directories("$ENV{PYTHON_ROOT}/include")
+-include_directories("$ENV{BOOST_ROOT}/include/boost-${BOOST_VERSION_}")
+-include_directories("$ENV{PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
 -link_directories("$ENV{TANGO_ROOT}/bin")
 -link_directories("$ENV{TANGO_ROOT}/lib")
 -link_directories("$ENV{PYTHON_ROOT}/libs")
@@ -54,10 +45,10 @@ index 2c78b9e..feaba2c 100644
 -message("PYTHON at: $ENV{PYTHON_ROOT}")
 -message("Release at: ${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}")
 -add_compile_options(/MT)
-+include_directories(${PROJECT_NAME} PUBLIC "${PYTHON_ROOT}/include")
-+include_directories(${PROJECT_NAME} PUBLIC "${TANGO_PKG_INCLUDE_DIRS}")
-+include_directories(${PROJECT_NAME} PUBLIC "${Boost_INCLUDE_DIRS}")
-+include_directories(${PROJECT_NAME} PUBLIC "${PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
++include_directories("${PYTHON_ROOT}/include")
++include_directories("${TANGO_PKG_INCLUDE_DIRS}")
++include_directories("${Boost_INCLUDE_DIRS}")
++include_directories("${PYTHON_ROOT}/Lib/site-packages/numpy/core/include")
 +link_directories("${TANGO_ROOT}/bin")
 +link_directories("${TANGO_ROOT}/lib")
 +link_directories("${PYTHON_ROOT}/libs")
@@ -78,45 +69,41 @@ index 2c78b9e..feaba2c 100644
 -  ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
 -  LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango"
 -  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/${RELEASE}/tango")
-+  COMPILE_OPTIONS "MD" )
- 
- if(MSVC90 AND (CMAKE_SIZEOF_VOID_P EQUAL 8))
-   # resolve VC 9 64bits complains
-   set_source_files_properties(ext/base_types.cpp PROPERTIES COMPILE_FLAGS /bigobj)
- endif()
- 
+-
 -add_custom_command(TARGET ${PROJECT_NAME}
 -  POST_BUILD
 -  COMMAND "$ENV{PYTHON_ROOT}/python.exe"  ARGS "${CMAKE_CURRENT_SOURCE_DIR}/winsetup.py" ${RELEASE} dist temp_dist $(ConfigurationName) $(PlatformName)
 -  COMMENT "Building installer")
--
++  COMPILE_OPTIONS "MD" )
+ 
  
  install(TARGETS ${PROJECT_NAME}
-   ARCHIVE DESTINATION lib
+@@ -174,15 +156,12 @@ install(TARGETS ${PROJECT_NAME}
    RUNTIME DESTINATION bin)
  
  set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/bigobj")
 -set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/MT")
 -set_property(TARGET ${PROJECT_NAME} PROPERTY LINK_FLAGS "/LTCG /force:multiple /DYNAMICBASE:NO /OPT:REF /OPT:ICF /SUBSYSTEM:WINDOWS")
-+set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/MD")
- target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 -target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/libtango.lib
 -                                             $ENV{TANGO_ROOT}/lib/omniORB4.lib
 -                                             $ENV{TANGO_ROOT}/lib/omniDynamic4.lib
 -                                             $ENV{TANGO_ROOT}/lib/COS4.lib
--                                             $ENV{TANGO_ROOT}/lib/omnithread.lib)
+-                                             $ENV{TANGO_ROOT}/lib/omnithread.lib
+-                                             $ENV{TANGO_ROOT}/lib/libzmq-v${ZMQ_VCSTR}-mt-s-${ZMQ_VERSION_}.lib
+-                                             $ENV{TANGO_ROOT}/lib/jpeg-static.lib)
++set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS "/MD")
++target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 +target_link_libraries(${PROJECT_NAME} PUBLIC tango omniORB4_rt omniDynamic4_rt COS4_rt omnithread_rt)
 +target_link_libraries(${PROJECT_NAME} PUBLIC libzmq-mt-4_3_4)
++target_link_libraries(${PROJECT_NAME} PUBLIC jpeg)
  target_link_libraries(${PROJECT_NAME} PUBLIC ws2_32 mswsock advapi32 comctl32 odbc32)
--target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/pthreadVC2.lib)
--target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{TANGO_ROOT}/lib/libzmq-v${VCSTR}-mt-s-${ZMQ_VERSION_}.lib)
--target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{BOOST_ROOT}/lib/libboost_python$ENV{PYTHON_VER}-vc${VCSTR}-mt-s-x${PY_TARGET}-${BOOST_VERSION_}.lib)
+-target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{BOOST_ROOT}/lib/libboost_python$ENV{PYTHON_VER}-vc${BOOST_VCSTR}-mt-s-x${PY_TARGET}-${BOOST_VERSION_}.lib)
 -target_link_libraries(${PROJECT_NAME} PUBLIC $ENV{PYTHON_ROOT}/libs/python$ENV{PYTHON_VER}.lib)
 +target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
 diff --git a/setup.py b/setup.py
-index e582210..b991322 100644
+index e112ccf..11394fe 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -13,6 +13,7 @@
