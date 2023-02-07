@@ -60,7 +60,6 @@ about:
   license_family: LGPL
   license_file:
     - LICENSE.txt
-    - LICENSE.cpython
   summary: Python binding for the TANGO control system
   doc_url: http://pytango.rtfd.io
   dev_url: https://gitlab.com/tango-controls/pytango
