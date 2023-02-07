@@ -35,7 +35,8 @@ requirements:
     # boost max_pin set in pin_run_as_build in conda-forge-pinning
     - boost
     - {{ pin_compatible('numpy') }}
-    - six >=1.10
+    - packaging
+    - psutil
 
 test:
   requires:                 # [unix]
