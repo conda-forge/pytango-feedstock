@@ -103,7 +103,7 @@ index 9875cc9..a890d23 100644
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
 diff --git a/setup.py b/setup.py
-index e112ccf..11394fe 100644
+index a87c243..cbdceed 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -13,6 +13,7 @@
@@ -182,13 +182,13 @@ index e112ccf..11394fe 100644
 -        dbg = so + ".dbg"
 -        try:
 -            os.chdir(d)
--            stripped_cmd = 'file %s | grep -q "not stripped" || exit 1' % so
+-            stripped_cmd = f'file {so} | grep -q "not stripped" || exit 1'
 -            not_stripped = os.system(stripped_cmd) == 0
 -            if not_stripped:
--                os.system("objcopy --only-keep-debug %s %s" % (so, dbg))
--                os.system("objcopy --strip-debug --strip-unneeded %s" % (so,))
--                os.system("objcopy --add-gnu-debuglink=%s %s" % (dbg, so))
--                os.system("chmod -x %s" % (dbg,))
+-                os.system(f"objcopy --only-keep-debug {so} {dbg}")
+-                os.system(f"objcopy --strip-debug --strip-unneeded {so}")
+-                os.system(f"objcopy --add-gnu-debuglink={dbg} {so}")
+-                os.system(f"chmod -x {dbg}")
 -        finally:
 -            os.chdir(orig_dir)
 -
@@ -266,7 +266,7 @@ index e112ccf..11394fe 100644
      Release = get_release_info()
  
      author = Release.authors["Coutinho"]
-@@ -453,46 +377,10 @@ def setup_args():
+@@ -450,46 +374,10 @@ def setup_args():
          extra_compile_args += ["-g", "-O0"]
          extra_link_args += ["-g", "-O0"]
  
