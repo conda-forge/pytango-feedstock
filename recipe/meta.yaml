@@ -43,7 +43,6 @@ test:
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - psutil                # [unix]
     - tango-test=3.6        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
