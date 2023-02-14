@@ -1,13 +1,13 @@
 {% set name = "pytango" %}
-{% set version = "9.4.0rc3" %}
+{% set version = "9.4.0dev0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: ecfa8e2bfb2fe51edf1e066b1848fedd6bfe84a3af3af0bb707edbb3d5899d8b
+  url: https://gitlab.com/tango-controls/pytango/-/archive/develop/pytango-develop.tar.gz
+  sha256: a799868bf44125e4ba73235b78cbe5f5994fab98cf5bc3097e7ff1c66b37c326
   patches:
     - cmake-win.patch             # [win]
 
