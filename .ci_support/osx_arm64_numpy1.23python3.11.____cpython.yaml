@@ -5,7 +5,7 @@ boost:
 channel_sources:
 - conda-forge
 channel_targets:
-- conda-forge pytango_rc
+- conda-forge pytango_dev
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
