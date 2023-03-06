@@ -103,7 +103,7 @@ index 9875cc9..a890d23 100644
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
 diff --git a/setup.py b/setup.py
-index a87c243..cbdceed 100644
+index 8251449..e44834d 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -13,6 +13,7 @@
@@ -114,7 +114,7 @@ index a87c243..cbdceed 100644
  import runpy
  import struct
  import subprocess
-@@ -20,14 +21,11 @@ import json
+@@ -20,13 +21,10 @@ import json
  
  from ctypes.util import find_library
  
@@ -123,28 +123,19 @@ index a87c243..cbdceed 100644
  from setuptools import Command
  from setuptools.command.build_ext import build_ext as dftbuild_ext
 -from setuptools.command.install import install
- 
+-
 -from distutils.command.build import build as dftbuild
 -from distutils.unixccompiler import UnixCCompiler
--from distutils.version import LooseVersion as V
  
  # numpy is only required when compiling, not when building the sdist for example
  try:
-@@ -213,84 +211,32 @@ def add_lib_boost(dirs):
+@@ -213,70 +211,33 @@ def add_lib_boost(dirs):
      dirs["libraries"].append(boost_library_name)
  
  
 -class build(dftbuild):
-+class PrebuiltExtension(Extension):
-+    def __init__(self, input_file, *args, **kw):
-+        name = pathlib.Path(input_file).stem
-+        if not os.path.exists(input_file):
-+            raise ValueError(f'Prebuilt extension file not found\n{input_file}')
-+        self.input_file = input_file
-+        super().__init__(name, sources=[], *args, **kw)
- 
 -    user_options = list(dftbuild.user_options)
- 
+-
 -    # Strip library option
 -    user_options.append(
 -        (
@@ -154,7 +145,14 @@ index a87c243..cbdceed 100644
 -            " (Unix like systems only)",
 -        )
 -    )
--
++class PrebuiltExtension(Extension):
++    def __init__(self, input_file, *args, **kw):
++        name = pathlib.Path(input_file).stem
++        if not os.path.exists(input_file):
++            raise ValueError(f"Prebuilt extension file not found\n{input_file}")
++        self.input_file = input_file
++        super().__init__(name, sources=[], *args, **kw)
+ 
 -    boolean_options = dftbuild.boolean_options + ["strip-lib"]
 -
 -    def initialize_options(self):
@@ -164,8 +162,8 @@ index a87c243..cbdceed 100644
 -
 -    def finalize_options(self):
 -        dftbuild.finalize_options(self)
-+class prebuilt_binary(dftbuild_ext):
  
++class prebuilt_binary(dftbuild_ext):
      def run(self):
 -        dftbuild.run(self)
 -        if self.strip_lib:
@@ -195,28 +193,15 @@ index a87c243..cbdceed 100644
 -
 -class build_ext(dftbuild_ext):
 -    def build_extensions(self):
--        self.use_cpp_0x = False
 -        if isinstance(self.compiler, UnixCCompiler):
 -            compiler_pars = self.compiler.compiler_so
 -            while "-Wstrict-prototypes" in compiler_pars:
 -                del compiler_pars[compiler_pars.index("-Wstrict-prototypes")]
--            # self.compiler.compiler_so = " ".join(compiler_pars)
--
--            # mimic tango check to activate C++0x extension
--            compiler = self.compiler.compiler
--            proc = subprocess.Popen(compiler + ["-dumpversion"], stdout=subprocess.PIPE)
--            pipe = proc.stdout
--            proc.wait()
--            gcc_ver = pipe.readlines()[0].decode().strip()
--            if V(gcc_ver) >= V("4.3.3"):
--                self.use_cpp_0x = True
 -        dftbuild_ext.build_extensions(self)
 -
 -    def build_extension(self, ext):
--        if self.use_cpp_0x:
--            ext.extra_compile_args += ["-std=c++14"]
--            ext.define_macros += [("PYTANGO_HAS_UNIQUE_PTR", "1")]
 -        ext.extra_compile_args += [
+-            "-std=c++14",
 -            "-Wno-deprecated-declarations",
 -        ]
 -        dftbuild_ext.build_extension(self, ext)
@@ -229,18 +214,20 @@ index a87c243..cbdceed 100644
 +            dest_filename = dest_path / os.path.basename(filename)
 +
 +            copy_file(
-+                ext.input_file, dest_filename, verbose=self.verbose,
-+                dry_run=self.dry_run
++                ext.input_file,
++                dest_filename,
++                verbose=self.verbose,
++                dry_run=self.dry_run,
 +            )
 +        if self.inplace:
 +            self.copy_extensions_to_source()
  
  
  class check_tests_errors(Command):
-@@ -333,28 +279,6 @@ class check_tests_errors(Command):
+@@ -318,28 +279,6 @@ class check_tests_errors(Command):
+ 
  
  def setup_args():
- 
 -    directories = {
 -        "include_dirs": [],
 -        "library_dirs": [],
@@ -266,7 +253,7 @@ index a87c243..cbdceed 100644
      Release = get_release_info()
  
      author = Release.authors["Coutinho"]
-@@ -450,46 +374,10 @@ def setup_args():
+@@ -433,46 +372,10 @@ def setup_args():
          extra_compile_args += ["-g", "-O0"]
          extra_link_args += ["-g", "-O0"]
  
