@@ -13,7 +13,7 @@ source:
     - coroutine-python3.11.patch  # [py==311]
 
 build:
-  number: 2
+  number: 3
   skip: true  # [osx]
 
 requirements:
