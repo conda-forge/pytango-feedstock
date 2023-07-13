@@ -1,3 +1,5 @@
+MACOSX_DEPLOYMENT_TARGET:
+- '11.0'
 boost:
 - 1.78.0
 channel_sources:
@@ -5,9 +7,13 @@ channel_sources:
 channel_targets:
 - conda-forge pytango_rc
 cxx_compiler:
-- vs2019
+- clangxx
+cxx_compiler_version:
+- '15'
+macos_machine:
+- arm64-apple-darwin20.0.0
 numpy:
-- '1.20'
+- '1.21'
 pin_run_as_build:
   boost:
     max_pin: x.x.x
@@ -17,7 +23,7 @@ pin_run_as_build:
 python:
 - 3.8.* *_cpython
 target_platform:
-- win-64
+- osx-arm64
 zip_keys:
 - - python
   - numpy
