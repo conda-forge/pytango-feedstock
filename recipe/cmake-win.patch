@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9875cc9..a890d23 100644
+index 475e359..a890d23 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -16,13 +16,13 @@ if(NOT WIN32)
@@ -25,8 +25,8 @@ index 9875cc9..a890d23 100644
          ext/tgutils.h
          ext/to_py.h)
  
--set(BOOST_VCSTR "140")
--set(BOOST_VERSION_ "1_73")
+-set(BOOST_VCSTR "142")
+-set(BOOST_VERSION_ "1_82")
 -set(ZMQ_VCSTR "141")
 -set(ZMQ_VERSION_ "4_0_5")
  
@@ -103,7 +103,7 @@ index 9875cc9..a890d23 100644
 +target_link_libraries(${PROJECT_NAME} PUBLIC boost_python${PYTHON_VER})
 +target_link_libraries(${PROJECT_NAME} PUBLIC python${PYTHON_VER})
 diff --git a/setup.py b/setup.py
-index 8251449..e44834d 100644
+index 27074db..9e42fdd 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -13,6 +13,7 @@
@@ -253,7 +253,7 @@ index 8251449..e44834d 100644
      Release = get_release_info()
  
      author = Release.authors["Coutinho"]
-@@ -433,46 +372,10 @@ def setup_args():
+@@ -434,46 +373,10 @@ def setup_args():
          extra_compile_args += ["-g", "-O0"]
          extra_link_args += ["-g", "-O0"]
  
