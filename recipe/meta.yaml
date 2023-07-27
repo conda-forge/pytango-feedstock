@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.4.1" %}
+{% set version = "9.4.2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f00198e9d150a222a9711fafebbee7c688c79814128956e6c92f8c0e7f1605b7
+  sha256: 61d9c47f6fcdaa747024768b2926cf90db1be213dd6e74ee9de50e146d328fa7
   patches:
     - cmake-win.patch             # [win]
 
 build:
-  number: 2
+  number: 0
+  skip: true  # [py<39]
 
 requirements:
   build:
@@ -43,7 +44,7 @@ test:
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.6        # [unix]
+    - tango-test=3.7        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
     - setup.cfg             # [unix]
