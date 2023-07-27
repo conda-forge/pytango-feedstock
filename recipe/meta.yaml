@@ -40,18 +40,18 @@ requirements:
     - psutil
 
 test:
-  requires:                 # [unix]
+  requires:   # [unix]
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
     - tango-test=3.7        # [unix]
-  source_files:             # [unix]
+  source_files:   # [unix]
     - tests/                # [unix]
     - setup.cfg             # [unix]
   imports:
     - PyTango
     - tango
-  commands:                 # [unix]
+  commands:   # [unix]
     - pytest                # [unix]
 
 about:
