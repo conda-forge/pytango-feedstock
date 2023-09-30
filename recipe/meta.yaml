@@ -12,7 +12,7 @@ source:
     - cmake-win.patch             # [win]
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<39]
 
 requirements:
@@ -27,14 +27,14 @@ requirements:
     - pip
     - cppzmq
     - cpptango >=9.4.1,<9.5.0a0
-    - boost
+    - libboost-python-devel
     - numpy
     - omniorb-libs
   run:
     # cpptango set in run_exports
     - python
     # boost max_pin set in pin_run_as_build in conda-forge-pinning
-    - boost
+    - libboost-python-devel
     - {{ pin_compatible('numpy') }}
     - packaging
     - psutil
