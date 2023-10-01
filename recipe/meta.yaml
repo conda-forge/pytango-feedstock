@@ -33,8 +33,6 @@ requirements:
   run:
     # cpptango set in run_exports
     - python
-    # boost max_pin set in pin_run_as_build in conda-forge-pinning
-    - libboost-python-devel
     - {{ pin_compatible('numpy') }}
     - packaging
     - psutil
