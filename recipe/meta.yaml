@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.4.2rc1" %}
+{% set version = "9.5.0rc1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 8022bddb2500811736f1e8f4e57234e5c362ce216de070cf1b96cc6a8e81c293
-  patches:
-    - cmake-win.patch             # [win]
+  sha256: 53bfdf00a89bc207174eeccd373bf6e9a109f1d3c673761235f8904cdb614bd3
 
 build:
   number: 0
   skip: true  # [py<39]
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
@@ -22,19 +21,19 @@ requirements:
     - numpy                                  # [build_platform != target_platform]
     - {{ compiler('cxx') }}
     - pkg-config  # [unix]
+    - cmake
+    - ninja       # [unix]
   host:
     - python
     - pip
     - cppzmq
-    - cpptango >=9.4.1,<9.5.0a0
-    - boost
+    - cpptango >=9.5.0,<9.6.0a0
+    - libboost-python-devel
     - numpy
     - omniorb-libs
+    - scikit-build-core
   run:
-    # cpptango set in run_exports
     - python
-    # boost max_pin set in pin_run_as_build in conda-forge-pinning
-    - boost
     - {{ pin_compatible('numpy') }}
     - packaging
     - psutil
@@ -44,15 +43,14 @@ test:
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.7        # [unix]
+    - tango-test=3.8        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
-    - setup.cfg             # [unix]
   imports:
     - PyTango
     - tango
   commands:                 # [unix]
-    - pytest                # [unix]
+    - pytest -v --forked    # [unix]
 
 about:
   home: http://pytango.rtfd.io
