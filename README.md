@@ -153,14 +153,14 @@ Current release info
 Installing pytango
 ==================
 
-Installing `pytango` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
+Installing `pytango` from the `conda-forge/label/pytango_rc` channel can be achieved by adding `conda-forge/label/pytango_rc` to your channels with:
 
 ```
-conda config --add channels conda-forge
+conda config --add channels conda-forge/label/pytango_rc
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `pytango` can be installed with `conda`:
+Once the `conda-forge/label/pytango_rc` channel has been enabled, `pytango` can be installed with `conda`:
 
 ```
 conda install pytango
@@ -175,26 +175,26 @@ mamba install pytango
 It is possible to list all of the versions of `pytango` available on your platform with `conda`:
 
 ```
-conda search pytango --channel conda-forge
+conda search pytango --channel conda-forge/label/pytango_rc
 ```
 
 or with `mamba`:
 
 ```
-mamba search pytango --channel conda-forge
+mamba search pytango --channel conda-forge/label/pytango_rc
 ```
 
 Alternatively, `mamba repoquery` may provide more information:
 
 ```
 # Search all versions available on your platform:
-mamba repoquery search pytango --channel conda-forge
+mamba repoquery search pytango --channel conda-forge/label/pytango_rc
 
 # List packages depending on `pytango`:
-mamba repoquery whoneeds pytango --channel conda-forge
+mamba repoquery whoneeds pytango --channel conda-forge/label/pytango_rc
 
 # List dependencies of `pytango`:
-mamba repoquery depends pytango --channel conda-forge
+mamba repoquery depends pytango --channel conda-forge/label/pytango_rc
 ```
 
 
