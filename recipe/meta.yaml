@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.5.0rc1" %}
+{% set version = "9.5.0rc2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,9 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 53bfdf00a89bc207174eeccd373bf6e9a109f1d3c673761235f8904cdb614bd3
-  patches:
-    - pytango-force-cxx-standard.patch
+  sha256: b01a530d7081cf683b846a107fae66bb65915a8ace3078ebfee672f342728251
 
 build:
   number: 0
