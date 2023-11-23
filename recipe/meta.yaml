@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.4.2" %}
+{% set version = "9.5.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,13 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 61d9c47f6fcdaa747024768b2926cf90db1be213dd6e74ee9de50e146d328fa7
-  patches:
-    - cmake-win.patch             # [win]
+  sha256: 559cb367c8f336c382cfcc3fb86a523a599c6f01d00bc9ad89ca7a363793182c
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<39]
+  script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
@@ -22,16 +21,18 @@ requirements:
     - numpy                                  # [build_platform != target_platform]
     - {{ compiler('cxx') }}
     - pkg-config  # [unix]
+    - cmake
+    - make        # [unix]
   host:
     - python
     - pip
     - cppzmq
-    - cpptango >=9.4.1,<9.5.0a0
+    - cpptango >=9.5.0,<9.6.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
+    - scikit-build-core
   run:
-    # cpptango set in run_exports
     - python
     - {{ pin_compatible('numpy') }}
     - packaging
@@ -42,18 +43,17 @@ test:
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.7        # [unix]
+    - tango-test=3.8        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
-    - setup.cfg             # [unix]
   imports:
     - PyTango
     - tango
   commands:                 # [unix]
     # Skip test_subscribe_data_ready_event on aarch64 for now
     # (fails most of the time)
-    - pytest                                           # [unix and not aarch64]
-    - pytest -k "not test_subscribe_data_ready_event"  # [aarch64]
+    - pytest -v --forked                                           # [unix and not aarch64]
+    - pytest -v --forked -k "not test_subscribe_data_ready_event"  # [aarch64]
 
 about:
   home: http://pytango.rtfd.io
