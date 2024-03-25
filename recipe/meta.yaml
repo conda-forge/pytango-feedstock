@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.5.0rc3" %}
+{% set version = "9.5.1rc1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a56180508bc2dbb68e441854b4a7d1f26fcff968b8deab37f34ba91db7e446db
+  sha256: 64575e6592930abb7054d7dca90c2bec262c3dc4d8605b498946ea58a66d5f89
 
 build:
   number: 0

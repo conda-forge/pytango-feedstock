@@ -4,6 +4,8 @@ channel_targets:
 - conda-forge pytango_rc
 cxx_compiler:
 - vs2019
+libboost_python_devel:
+- '1.82'
 numpy:
 - '1.23'
 pin_run_as_build:
