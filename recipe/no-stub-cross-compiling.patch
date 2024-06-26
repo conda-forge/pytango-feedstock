@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 024bcb66..3346b5b9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -181,7 +181,9 @@ install(TARGETS pytango_tango
+ 	LIBRARY DESTINATION tango
+ 	RUNTIME DESTINATION tango)
+ 
+-include(cmake/generate_stubs.cmake)
++if(NOT CMAKE_CROSSCOMPILING)
++  include(cmake/generate_stubs.cmake)
++endif()
+ 
+ # ---- Developer mode ----
+ 
