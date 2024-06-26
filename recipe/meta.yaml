@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.5.1rc1" %}
+{% set version = "10.0.0rc1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 64575e6592930abb7054d7dca90c2bec262c3dc4d8605b498946ea58a66d5f89
+  sha256: 938138444437305e36083de74c00f0e2bcf350dfb295f159ef79573b1e43a212
 
 build:
   number: 0
@@ -27,23 +27,27 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=9.5.0,<9.6.0a0
+    - cpptango >=10.0.0rc1,<10.1.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
     - scikit-build-core
+    - pybind11-stubgen
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - packaging
     - psutil
+    - opentelemetry-api                       # [unix]
+    - opentelemetry-sdk                       # [unix]
+    - opentelemetry-exporter-otlp-proto-grpc  # [unix]
+    - opentelemetry-exporter-otlp-proto-http  # [unix]
 
 test:
   requires:                 # [unix]
     - pytest                # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.8        # [unix]
+    - tango-test=3.9        # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
   imports:
@@ -69,3 +73,4 @@ extra:
   recipe-maintainers:
     - beenje
     - ajoubertza
+    - yamedvedya
