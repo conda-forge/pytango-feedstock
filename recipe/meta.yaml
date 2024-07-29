@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "10.0.0rc1" %}
+{% set version = "10.0.0rc2" %}
 
 package:
   name: {{ name|lower }}
@@ -7,9 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 938138444437305e36083de74c00f0e2bcf350dfb295f159ef79573b1e43a212
-  patches:
-    - no-stub-cross-compiling.patch
+  sha256: 71ea40ea3f51bbc1121fb5ebf23df6bcc9b69d79cdde74bf2eae96239ba360f9
 
 build:
   number: 0
@@ -30,7 +28,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.0.0rc1,<10.1.0a0
+    - cpptango >=10.0.0rc4,<10.1.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
