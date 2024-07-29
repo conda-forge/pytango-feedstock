@@ -10,7 +10,7 @@ source:
   sha256: 71ea40ea3f51bbc1121fb5ebf23df6bcc9b69d79cdde74bf2eae96239ba360f9
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -46,6 +46,7 @@ requirements:
 test:
   requires:                 # [unix]
     - pytest                # [unix]
+    - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
     - tango-test=3.9        # [unix]
