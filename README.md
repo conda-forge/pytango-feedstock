@@ -301,4 +301,5 @@ Feedstock Maintainers
 
 * [@ajoubertza](https://github.com/ajoubertza/)
 * [@beenje](https://github.com/beenje/)
+* [@yamedvedya](https://github.com/yamedvedya/)
 
