@@ -12,7 +12,7 @@ source:
     - 0001-Fix-psutil-DeprecationWarning.patch
 
 build:
-  number: 1
+  number: 2
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -37,7 +37,6 @@ requirements:
     - scikit-build-core
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - packaging
     - psutil
 
