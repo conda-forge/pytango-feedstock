@@ -42,6 +42,7 @@ requirements:
 test:
   requires:   # [unix]
     - pytest                # [unix]
+    - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
     - tango-test=3.8        # [unix]
