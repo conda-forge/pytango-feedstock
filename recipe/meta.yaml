@@ -8,9 +8,11 @@ package:
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: a75113a4ff15232c938fbf40240fbdffea0140e1af7b24366ecec0e2921bc634
+  patches:
+    - 0001-Fix-psutil-DeprecationWarning.patch
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -42,6 +44,7 @@ requirements:
 test:
   requires:   # [unix]
     - pytest                # [unix]
+    - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
     - tango-test=3.8        # [unix]
