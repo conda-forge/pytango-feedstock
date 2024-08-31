@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "10.0.0rc2" %}
+{% set version = "10.0.0rc3" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 71ea40ea3f51bbc1121fb5ebf23df6bcc9b69d79cdde74bf2eae96239ba360f9
+  sha256: 201c01f75432c2b7825a73e88914e5ca8a8df59198f8589358c92aec6e93f658
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -28,7 +28,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.0.0rc4,<10.1.0a0
+    - cpptango >=10.0.0rc5,<10.1.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
@@ -37,7 +37,7 @@ requirements:
   run:
     - python
     - packaging
-    - psutil
+    - psutil >=5.3.0
     - opentelemetry-api                       # [unix]
     - opentelemetry-sdk                       # [unix]
     - opentelemetry-exporter-otlp-proto-grpc  # [unix]
