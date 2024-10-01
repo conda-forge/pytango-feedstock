@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.5.1" %}
+{% set version = "10.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a75113a4ff15232c938fbf40240fbdffea0140e1af7b24366ecec0e2921bc634
+  sha256: a83318d51d8339fa121e308d9e70dea0046c5cd558670a1906ddade0e9d914d2
   patches:
     - 0001-Fix-psutil-DeprecationWarning.patch
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
