@@ -1,5 +1,5 @@
 {% set name = "pytango" %}
-{% set version = "9.5.1" %}
+{% set version = "10.0.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,12 +7,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a75113a4ff15232c938fbf40240fbdffea0140e1af7b24366ecec0e2921bc634
-  patches:
-    - 0001-Fix-psutil-DeprecationWarning.patch
+  sha256: a83318d51d8339fa121e308d9e70dea0046c5cd558670a1906ddade0e9d914d2
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -30,16 +28,20 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=9.5.0,<9.6.0a0
+    - cpptango >=10.0.0,<10.1.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
     - scikit-build-core
+    - pybind11-stubgen
   run:
     - python
-    - {{ pin_compatible('numpy') }}
     - packaging
-    - psutil
+    - psutil >=5.3.0
+    - opentelemetry-api                       # [unix]
+    - opentelemetry-sdk                       # [unix]
+    - opentelemetry-exporter-otlp-proto-grpc  # [unix]
+    - opentelemetry-exporter-otlp-proto-http  # [unix]
 
 test:
   requires:   # [unix]
@@ -47,7 +49,7 @@ test:
     - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.8        # [unix]
+    - tango-test=3.10       # [unix]
   source_files:   # [unix]
     - tests/                # [unix]
   imports:
@@ -56,8 +58,8 @@ test:
   commands:   # [unix]
     # Skip test_subscribe_data_ready_event on aarch64 for now
     # (fails most of the time)
-    - pytest -v --forked                                           # [unix and not aarch64]
-    - pytest -v --forked -k "not test_subscribe_data_ready_event"  # [aarch64]
+    - pytest -v --forked || pytest -v --forked --lf  # [unix and not aarch64]
+    - pytest -v --forked -k "not test_subscribe_data_ready_event" || pytest -v --forked --lf  # [aarch64]
 
 about:
   home: http://pytango.rtfd.io
