@@ -54,6 +54,7 @@ test:
     - tango-test=3.10       # [unix]
   source_files:             # [unix]
     - tests/                # [unix]
+    - pyproject.toml        # [unix]
   imports:
     - PyTango
     - tango
