@@ -54,14 +54,15 @@ test:
     - tango-test=3.10       # [unix]
   source_files:   # [unix]
     - tests/                # [unix]
+    - pyproject.toml        # [unix]
   imports:
     - PyTango
     - tango
   commands:   # [unix]
     # Skip test_subscribe_data_ready_event on aarch64 for now
     # (fails most of the time)
-    - pytest -v --forked || pytest -v --forked --lf  # [unix and not aarch64]
-    - pytest -v --forked -k "not test_subscribe_data_ready_event" || pytest -v --forked --lf  # [aarch64]
+    - pytest || pytest --lf  # [unix and not aarch64]
+    - pytest -k "not test_subscribe_data_ready_event" || pytest --lf  # [aarch64]
 
 about:
   home: http://pytango.rtfd.io
