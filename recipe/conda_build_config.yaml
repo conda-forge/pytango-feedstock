@@ -1,4 +1,2 @@
-channel_sources:
-  - conda-forge/label/cpptango_rc,conda-forge/label/tango-test_rc,conda-forge
 channel_targets:
   - conda-forge pytango_rc

@@ -7,15 +7,15 @@ c_stdlib:
 c_stdlib_version:
 - '10.13'
 channel_sources:
-- conda-forge/label/cpptango_rc,conda-forge/label/tango-test_rc,conda-forge
+- conda-forge
 channel_targets:
 - conda-forge pytango_rc
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
-- '17'
+- '18'
 libboost_python_devel:
-- '1.84'
+- '1.86'
 macos_machine:
 - x86_64-apple-darwin13.4.0
 numpy:
