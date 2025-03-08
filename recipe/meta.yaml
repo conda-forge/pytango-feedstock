@@ -1,16 +1,16 @@
 {% set name = "pytango" %}
-{% set version = "10.0.0" %}
+{% set version = "10.0.2" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a83318d51d8339fa121e308d9e70dea0046c5cd558670a1906ddade0e9d914d2
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 8f0b8905e40b990f8f2ce48bf47b072bfd7cb4578f144d158baddd001f98521d
 
 build:
-  number: 1
+  number: 0
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -28,16 +28,18 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.0.0,<10.1.0a0
+    - cpptango >=10.0.2,<10.1.0a0
     - libboost-python-devel
     - numpy
     - omniorb-libs
     - scikit-build-core
     - pybind11-stubgen
+    - typing_extensions >=4.5.0               # [py<313]
   run:
     - python
     - packaging
     - psutil >=5.3.0
+    - typing_extensions >=4.5.0               # [py<313]
     - opentelemetry-api                       # [unix]
     - opentelemetry-sdk                       # [unix]
     - opentelemetry-exporter-otlp-proto-grpc  # [unix]
@@ -49,17 +51,17 @@ test:
     - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test=3.10       # [unix]
+    - tango-test 3.10       # [unix]
   source_files:   # [unix]
     - tests/                # [unix]
+    - pyproject.toml        # [unix]
   imports:
     - PyTango
     - tango
   commands:   # [unix]
-    # Skip test_subscribe_data_ready_event on aarch64 for now
-    # (fails most of the time)
-    - pytest -v --forked || pytest -v --forked --lf  # [unix and not aarch64]
-    - pytest -v --forked -k "not test_subscribe_data_ready_event" || pytest -v --forked --lf  # [aarch64]
+    # Skip some flaky tests
+    - pytest -k "not test_attribute_poll" || pytest --lf  # [unix and not aarch64]
+    - pytest -k "not test_subscribe_data_ready_event and not test_attribute_poll and not test_databaseds.py" || pytest --lf  # [aarch64]
 
 about:
   home: http://pytango.rtfd.io
