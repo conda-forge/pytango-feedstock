@@ -51,7 +51,7 @@ test:
     - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test 3.10       # [unix]
+    - tango-test =3.11      # [unix]
   source_files:   # [unix]
     - tests/                # [unix]
     - pyproject.toml        # [unix]
