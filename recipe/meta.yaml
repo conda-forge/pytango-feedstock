@@ -10,7 +10,7 @@ source:
   sha256: 8f0b8905e40b990f8f2ce48bf47b072bfd7cb4578f144d158baddd001f98521d
 
 build:
-  number: 0
+  number: 1
   skip: true  # [py<39]
   script: {{ PYTHON }} -m pip install . -vv
 
@@ -51,7 +51,7 @@ test:
     - pytest-asyncio        # [unix]
     - pytest-forked         # [unix]
     - gevent                # [unix]
-    - tango-test 3.10       # [unix]
+    - tango-test =3.11      # [unix]
   source_files:   # [unix]
     - tests/                # [unix]
     - pyproject.toml        # [unix]
