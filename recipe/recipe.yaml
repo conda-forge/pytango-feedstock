@@ -83,6 +83,7 @@ tests:
         - pytest
         - pytest-asyncio
         - pytest-forked
+        - pytest-timeout
         - gevent
         - tango-test =3.11
 
