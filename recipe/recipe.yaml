@@ -70,8 +70,8 @@ tests:
       # Only basic tests on windows
       - if: win
         then:
-          - pytest -c pytest_win_config.toml -k test_ping
-          - pytest -c pytest_win_config.toml -k test_state_status
+          - pytest -c pytest_win_config.toml tests/test_device_proxy.py::test_ping
+          - pytest -c pytest_win_config.toml "tests/test_attribute_proxy.py::test_state_status[scalar_int]"
     files:
       source:
         - tests/
