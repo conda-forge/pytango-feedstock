@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pytango
-  version: 10.0.2
+  version: "10.0.3"
 
 package:
   name: ${{ name|lower }}
@@ -10,10 +10,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: 8f0b8905e40b990f8f2ce48bf47b072bfd7cb4578f144d158baddd001f98521d
+  sha256: afb1db9df5c658a4dacd50134a39e75ce093d2d8858dfeec6330668b2d689943
 
 build:
-  number: 2
+  number: 0
   skip: match(python, "<3.9")
   script: ${{ PYTHON }} -m pip install . -vv
 
