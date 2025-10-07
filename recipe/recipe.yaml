@@ -11,6 +11,8 @@ package:
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
   sha256: afb1db9df5c658a4dacd50134a39e75ce093d2d8858dfeec6330668b2d689943
+  patches:
+    - 0001-Fix-PyTangoThreadPoolExecutor-for-Python-3.14.patch
 
 build:
   number: 2
