@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pytango
-  version: 10.0.3rc1
+  version: 10.1.0rc1
 
 package:
   name: ${{ name|lower }}
@@ -10,11 +10,11 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: 6cfa0adb57d3060dfa0a9e83a4a6bfc65a7140fc4c9c52c2eaa71b2e33a28606
+  sha256: 77f7ad0623541c7c1ff8c295e12a419a5091d0f9a112dbe7736bf7f20b61ec2f
 
 build:
   number: 0
-  skip: match(python, "<3.9")
+  skip: match(python, "<3.10")
   script: ${{ PYTHON }} -m pip install . -vv
 
 requirements:
@@ -35,18 +35,20 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.0.2,<10.1.0a0
-    - libboost-python-devel
+    - cpptango >=10.1.1,<10.2.0a0
+    - pybind11 >=3.0.1
     - numpy
     - omniorb-libs
     - scikit-build-core
     - pybind11-stubgen
+    - ruff
     - if: match(python, "<3.13")
       then: typing_extensions >=4.5.0
   run:
     - python
     - packaging
     - psutil >=5.3.0
+    - docstring_parser
     - if: match(python, "<3.13")
       then: typing_extensions >=4.5.0
     - if: unix
@@ -82,10 +84,11 @@ tests:
       run:
         - pytest
         - pytest-asyncio
+        - pytest-env
         - pytest-forked
         - pytest-timeout
         - gevent
-        - tango-test =3.11
+        - tango-test =3.12
 
 about:
   summary: Python binding for the TANGO control system
