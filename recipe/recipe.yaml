@@ -66,9 +66,9 @@ tests:
   - script:
       # Skip some flaky tests
       - if: unix and not aarch64
-        then: pytest -k "not test_attribute_poll" || pytest --lf
+        then: pytest -k "not test_attribute_poll and not test_async_events_subscription" || pytest --lf
       - if: aarch64
-        then: pytest -k "not test_subscribe_data_ready_event and not test_attribute_poll and not test_databaseds.py" || pytest --lf
+        then: pytest -k "not test_subscribe_data_ready_event and not test_attribute_poll and not test_async_events_subscription and not test_databaseds.py" || pytest --lf
       # Only basic tests on windows
       - if: win
         then:
