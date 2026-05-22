@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pytango
-  version: "10.1.4"
+  version: "10.3.0rc1"
 
 package:
   name: ${{ name|lower }}
@@ -10,7 +10,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: 74bd7d5162e234ea27c3d82edfe473a767031020ce1bc7cba17cfb132d274ce5
+  sha256: 19efab65eb495c2085eddfa7f7f0669153c22b75070dec5bf9e10d9e56333de7
 
 build:
   number: 0
@@ -35,7 +35,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.1.1,<10.2.0a0
+    - cpptango >=10.3.1,<10.4.0a0
     - pybind11 >=3.0.1
     - numpy
     - omniorb-libs
