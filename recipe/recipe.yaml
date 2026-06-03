@@ -13,7 +13,6 @@ source:
   sha256: 19efab65eb495c2085eddfa7f7f0669153c22b75070dec5bf9e10d9e56333de7
   patches:
     - test-context-exception-chaining.patch
-    - test_tread_shutdown.patch
 
 build:
   number: 0
@@ -38,7 +37,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.3.1,<10.4.0a0
+    - cpptango >=10.3.2,<10.4.0a0
     - pybind11 >=3.0.1
     - numpy
     - omniorb-libs
