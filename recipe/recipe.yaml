@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pytango
-  version: "10.1.5"
+  version: "10.1.6"
 
 package:
   name: ${{ name|lower }}
@@ -10,11 +10,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: 114609b25bdcbcdb56d81a9b07bbe8ef53cae94696a3f08c2609b4abc15fc0fe
+  sha256: c4528842a837ceeb3435dbcc167beef6a7d7d6b193477b4459e04b63efb6c6a0
 
 build:
   number: 0
-  skip: match(python, "<3.10")
   script: ${{ PYTHON }} -m pip install . -vv
 
 requirements:
@@ -35,7 +34,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.1.1,<10.2.0a0
+    - cpptango >=10.1.2,<10.2.0a0
     - pybind11 >=3.0.1
     - numpy
     - omniorb-libs
@@ -65,10 +64,12 @@ tests:
         - tango
   - script:
       # Skip some flaky tests
-      - if: unix and not aarch64
+      - if: linux and not aarch64
         then: pytest -k "not test_attribute_poll and not test_async_events_subscription" || pytest --lf
-      - if: aarch64
+      - if: aarch64 and not osx
         then: pytest -k "not test_subscribe_data_ready_event and not test_attribute_poll and not test_async_events_subscription and not test_databaseds.py" || pytest --lf
+      - if: osx
+        then: pytest -k "not test_attribute_poll and not test_async_events_subscription and not test_telemetry.py" || pytest --lf
       # Only basic tests on windows
       - if: win
         then:
