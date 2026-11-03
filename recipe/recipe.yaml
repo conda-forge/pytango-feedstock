@@ -83,7 +83,7 @@ tests:
           then: pytest_win_config.toml
     requirements:
       run:
-        - pytest
+        - pytest <9.2
         - pytest-asyncio
         - pytest-env
         - pytest-forked
