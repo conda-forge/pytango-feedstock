@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   name: pytango
-  version: "10.3.1"
+  version: "10.3.2"
 
 package:
   name: ${{ name|lower }}
@@ -10,13 +10,10 @@ package:
 
 source:
   url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
-  sha256: b8510915e4f859b2b9775b23641ab2e2d56933c9e20d89f1323ee0d55c3cf047
-  patches:
-    - 0001-Ignore-fork-DeprecationWarning-on-Python-3.15.patch
-    - 0002-Keep-exception-types-alive-past-interpreter-shutdown.patch
+  sha256: 84ab5e3370d325f411b7c6edf8de7ae80db3b1703bc2913b1928a99212094a13
 
 build:
-  number: 1
+  number: 0
   script: ${{ PYTHON }} -m pip install . -vv
 
 requirements:
@@ -37,7 +34,7 @@ requirements:
     - python
     - pip
     - cppzmq
-    - cpptango >=10.3.2,<10.4.0a0
+    - cpptango >=10.3.4,<10.4.0a0
     - pybind11 >=3.0.1
     - numpy
     - omniorb-libs
@@ -86,7 +83,7 @@ tests:
           then: pytest_win_config.toml
     requirements:
       run:
-        - pytest
+        - pytest <9.2
         - pytest-asyncio
         - pytest-env
         - pytest-forked
